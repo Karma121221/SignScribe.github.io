@@ -5,21 +5,21 @@
   <link rel="stylesheet" href="style.css">
   <style>
     h1 {
-            text-align: center;
-            color: white;
-        }
+      text-align: center;
+      color: white;
+    }
     video {
-            width: 100%;
-            max-width: 640px;
-            border: 2px solid #333;
-            border-radius: 8px;
-        }
-    canvas{
-            width: 100%;
-            max-width: 640px;
-            border: 2px solid #333;
-            border-radius: 8px;
-        }
+      width: 100%;
+      max-width: 640px;
+      border: 2px solid #333;
+      border-radius: 8px;
+    }
+    canvas {
+      width: 100%;
+      max-width: 640px;
+      border: 2px solid #333;
+      border-radius: 8px;
+    }
   </style>
 </head>
 
@@ -34,59 +34,66 @@
         <li><a href="about.html">About us</a></li>
       </ul>
     </div>
-    <h1>Webcam Access</h1>
-    <div class="vidcontainer">
-      <video id="webcam" autoplay playsinline></video>
-      <canvas id="canvas" style="display:none;"></canvas>
-    </div>
-    <div class="btncontainer">
-      <button id="startButton">Start Webcam</button>
-      <button id="stopButton" disabled>Stop Webcam</button>
-    </div>
-    <script>
-      const video = document.getElementById('webcam');
-      const canvas = document.getElementById('canvas');
-      const ctx = canvas.getContext('2d');
+  </div> <!-- Close the .banner div here -->
+  <h1>Webcam Access</h1>
+  <div class="vidcontainer">
+    <video id="webcam" autoplay playsinline></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+  </div>
+  <div class="btncontainer">
+    <button id="startButton">Start Webcam</button>
+    <button id="stopButton" disabled>Stop Webcam</button>
+  </div>
+  <script>
+    const video = document.getElementById('webcam');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
 
-      async function startCamera() {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          video.srcObject = stream;
-          video.play();
-        } catch (error) {
-          console.error('Error accessing the webcam:', error);
-        }
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        video.play();
+        // Enable the stop button
+        document.getElementById('stopButton').removeAttribute('disabled');
+        document.getElementById('startButton').setAttribute('disabled', true);
+      } catch (error) {
+        console.error('Error accessing the webcam:', error);
       }
+    }
 
-      function stopCamera() {
-        if (video.srcObject) {
-          video.srcObject.getTracks().forEach(track => track.stop());
-          video.srcObject = null;
-        }
+    function stopCamera() {
+      if (video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+        // Enable the start button
+        document.getElementById('startButton').removeAttribute('disabled');
+        document.getElementById('stopButton').setAttribute('disabled', true);
       }
+    }
 
-      async function detectEmotion() {
-        // Capture video frame
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    async function detectEmotion() {
+      // Capture video frame
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // Use TensorFlow.js to perform emotion recognition here
+      // Use TensorFlow.js to perform emotion recognition here
 
-        // Continue capturing frames and processing emotions
-        requestAnimationFrame(detectEmotion);
-      }
+      // Continue capturing frames and processing emotions
+      requestAnimationFrame(detectEmotion);
+    }
 
-      document.getElementById('startButton').addEventListener('click', () => {
-        startCamera();
-      });
+    document.getElementById('startButton').addEventListener('click', () => {
+      startCamera();
+    });
 
-      document.getElementById('stopButton').addEventListener('click', () => {
-        stopCamera();
-      });
+    document.getElementById('stopButton').addEventListener('click', () => {
+      stopCamera();
+    });
 
-      // Start emotion recognition when the page loads
-      detectEmotion();
-    </script>
+    // Start emotion recognition when the page loads
+    detectEmotion();
+  </script>
 </body>
 </html>
